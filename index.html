@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f3">
+  <meta name="description" content="학생의 관심과 학교생활을 바탕으로 다음 학습 단계를 설계하는 진로·세특 코칭 도구">
+  <title>나침반 — 진로와 세특을 잇다</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="나침반 홈">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><path d="m22.8 12.7-3.4 8.2-6.2 2.4 3.4-8.2 6.2-2.4Z"/><circle cx="18" cy="18" r="1.2"/></svg></span>
+      <span><strong>나침반</strong><small>진로와 세특을 잇다</small></span>
+    </a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a class="nav-link active" href="#input">내 정보</a>
+      <a class="nav-link" href="#audit">생기부 진단</a>
+      <a class="nav-link" href="#universities">대학 탐색</a>
+      <a class="nav-link" href="#inquiry">탐구 주제</a>
+      <a class="nav-link" href="#resources">추천 자료</a>
+      <a class="nav-link" href="#roadmap">진로 로드맵</a>
+    </nav>
+    <button class="button button-small button-outline top-print" type="button" data-print><span aria-hidden="true">↗</span> 리포트</button>
+  </header>
+
+  <main id="home">
+    <section class="hero page-width" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> MY CAREER COMPASS <span class="demo-pill" id="analysis-mode-pill">로컬 규칙 분석</span></div>
+        <h1 id="hero-title">기록을 읽고,<br><em>다음 한 걸음</em>을 찾다.</h1>
+        <p>성적과 세특에서 나만의 성장 방향을 발견해요.<br class="desktop-only"> 작지만 구체적인 탐구가 진로의 지도가 됩니다.</p>
+        <div class="hero-actions">
+          <a class="button button-dark" href="#input">내 정보 입력하기 <span aria-hidden="true">↓</span></a>
+          <button class="button button-quiet" type="button" data-sample>샘플 데이터 보기 <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="관심에서 진로까지 이어지는 나침반 그래픽">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="orbit-dot dot-a"></div><div class="orbit-dot dot-b"></div><div class="orbit-dot dot-c"></div>
+        <div class="compass"><span class="compass-north">N</span><span class="compass-arrow">✦</span><span class="compass-east">진로</span></div>
+        <div class="art-note note-top"><span class="note-icon">✳</span> 관심 발견</div>
+        <div class="art-note note-bottom"><span class="note-icon">↗</span> 성장 방향</div>
+      </div>
+      <div class="hero-bottom"><span>나의 현재를 이해하는 데서 시작해요</span><span class="hero-line"></span><span>01 — 06</span></div>
+    </section>
+
+    <section class="summary-band page-width" aria-label="진단 요약">
+      <div class="summary-intro"><span class="section-kicker">YOUR SNAPSHOT</span><strong id="snapshot-name">장동우 학생</strong><span id="snapshot-major">인공지능 · 컴퓨터공학 계열 희망</span></div>
+      <div class="summary-stat"><span>종합 진단</span><strong><b id="stat-score">78</b><small> / 100</small></strong><div class="mini-track"><i id="stat-score-bar"></i></div></div>
+      <div class="summary-stat"><span>교과 평균 등급</span><strong><b id="stat-grade">2.3</b><small> 등급</small></strong><span class="stat-caption">입력 과목 기준</span></div>
+      <div class="summary-stat"><span>발견한 강점</span><strong><b id="stat-strengths">03</b><small> 가지</small></strong><span class="stat-caption">기록에서 찾아봤어요</span></div>
+      <div class="summary-note"><span class="note-spark">✳</span><span>오늘의 기록은<br><strong>내일의 가능성</strong>이 돼요.</span></div>
+    </section>
+
+    <section class="section page-width" id="input">
+      <div class="section-heading">
+        <div><span class="section-kicker">01 / MY PROFILE</span><h2>나에 대해 알려주세요<span class="heading-period">.</span></h2><p>입력한 정보는 이 브라우저에만 저장돼요.</p></div>
+        <span class="step-chip"><i>01</i> 프로필 입력</span>
+      </div>
+      <div class="input-layout">
+        <form class="panel profile-panel" id="profile-form">
+          <div class="panel-heading"><div><span class="panel-icon">01</span><h3>기본 정보</h3></div><span class="required-note">* 필수 입력</span></div>
+          <div class="form-grid">
+            <label class="field"><span>이름</span><input id="student-name" name="name" maxlength="30" placeholder="이름을 입력해 주세요" autocomplete="name"></label>
+            <label class="field"><span>학년</span><select id="student-grade" name="grade"><option value="1">고등학교 1학년</option><option value="2">고등학교 2학년</option><option value="3">고등학교 3학년</option></select></label>
+            <label class="field"><span>희망 계열</span><select id="student-track" name="track"><option>컴퓨터·AI</option><option>자연·공학</option><option>생명·의학</option><option>경영·경제</option><option>인문·사회</option><option>교육</option><option>예술·체육</option><option>기타</option></select></label>
+            <label class="field"><span>관심 학과 <small>(선택)</small></span><input id="student-major" name="major" maxlength="50" placeholder="예: 컴퓨터공학"></label>
+            <label class="field field-wide"><span>요즘 관심 있는 것 <small>(키워드로 적어도 좋아요)</small></span><input id="student-interest" name="interest" maxlength="140" placeholder="예: 생성형 AI, 기후 변화, 데이터 시각화"></label>
+          </div>
+          <div class="divider"></div>
+          <div class="panel-heading grade-heading"><div><span class="panel-icon">02</span><h3>과목별 성적</h3></div><button type="button" class="text-button" id="add-grade">＋ 과목 추가</button></div>
+          <div class="grade-table-wrap"><table class="grade-table"><thead><tr><th>과목명</th><th>학기</th><th>등급</th><th><span class="sr-only">삭제</span></th></tr></thead><tbody id="grade-rows"></tbody></table></div>
+          <div class="divider"></div>
+          <label class="field field-block"><span>세부능력 및 특기사항 <small>(세특)</small></span><textarea id="student-record" name="record" rows="6" maxlength="4000" placeholder="수업에서 탐구한 주제, 내가 한 활동, 알게 된 점을 적어주세요."></textarea><span class="field-hint"><span id="record-count">0</span> / 4,000자 <span>구체적인 과정과 배운 점을 적으면 더 알찬 피드백을 받을 수 있어요.</span></span></label>
+          <div class="form-footer"><span class="privacy-note"><span aria-hidden="true">◉</span> <span id="privacy-message">입력 내용은 이 브라우저에서만 처리돼요.</span></span><div class="form-actions"><button class="button button-outline" type="button" data-sample>샘플 불러오기</button><button class="button button-green" type="submit" id="analyze-button"><span>✳</span> 내 기록 분석하기</button></div></div>
+          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        </form>
+        <aside class="side-guide">
+          <div class="guide-top"><span class="guide-index">GUIDE / 01</span><span class="guide-leaf">✳</span></div>
+          <span class="side-label">BETTER INPUT, BETTER INSIGHT</span>
+          <h3>기록의 순간을<br>떠올려 보세요.</h3>
+          <p>좋은 세특은 결과보다 과정에서 시작돼요. 궁금증이 생긴 순간부터 해결해 나간 과정을 편하게 적어주세요.</p>
+          <div class="guide-example"><span>이런 내용을 담아보세요</span><ul><li>무엇이 궁금했나요?</li><li>어떤 방법으로 알아봤나요?</li><li>새롭게 알게 된 점은요?</li></ul></div>
+          <div class="guide-footer"><span>YOUR STORY, YOUR DIRECTION</span><span>✦</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-tinted" id="audit">
+      <div class="page-width">
+        <div class="section-heading"><div><span class="section-kicker">02 / RECORD REVIEW</span><h2>기록 속 가능성 읽기<span class="heading-period">.</span></h2><p>입력한 내용을 바탕으로 학습 방향을 정리했어요.</p></div><span class="step-chip"><i>02</i> 생기부 진단</span></div>
+        <div class="audit-layout">
+          <article class="panel score-panel"><div class="score-top"><div><span class="panel-eyebrow">MY GROWTH SCORE</span><h3>종합 진단</h3></div><span class="sample-tag">참고용 진단</span></div><div class="score-body"><div class="score-ring" id="score-ring"><div><strong id="audit-score">78</strong><span>점</span></div></div><div class="score-copy"><strong id="score-title">탐구를 확장하는 학생</strong><p id="score-summary">현재 입력된 성적과 기록을 기준으로 살펴봤어요.</p><div class="score-meta"><span>학년 <b id="audit-grade">2학년</b></span><span>기록 <b id="audit-record-length">0자</b></span></div></div></div><div class="score-foot"><span id="analysis-note">키워드 기반 기본 분석입니다. 외부 AI·입시 데이터는 연결되지 않았으며, 점수는 참고용 지표예요.</span><span>ⓘ</span></div></article>
+          <article class="panel competency-panel"><div class="panel-heading"><div><span class="panel-icon">03</span><h3>역량별 성장 단서</h3></div><span class="muted-label">기록에서 읽은 키워드</span></div><div class="competency-list" id="competency-list"></div></article>
+        </div>
+        <div class="feedback-grid"><article class="feedback-card feedback-strength"><div class="feedback-heading"><span class="feedback-symbol">↗</span><div><span>KEEP GROWING</span><h3>이미 잘하고 있는 점</h3></div></div><ul id="strength-list"></ul></article><article class="feedback-card feedback-next"><div class="feedback-heading"><span class="feedback-symbol">＋</span><div><span>NEXT STEP</span><h3>다음에 채워볼 점</h3></div></div><ul id="growth-list"></ul></article></div>
+        <div class="insight-banner"><span class="banner-mark">✳</span><div><span class="banner-label">A SMALL TIP FOR YOU</span><p id="next-step-tip">작은 질문 하나를 직접 확인해 보는 경험이 기록을 더 깊게 만들어요.</p></div><span class="banner-number">TIP / 01</span></div>
+      </div>
+    </section>
+
+    <section class="section page-width" id="universities">
+      <div class="section-heading"><div><span class="section-kicker">03 / EXPLORE YOUR OPTIONS</span><h2>가능성을 넓혀보는 지원 탐색<span class="heading-period">.</span></h2><p>목표 학과를 중심으로 지원 전략을 살펴보세요.</p></div><span class="step-chip"><i>03</i> 대학 탐색</span></div>
+      <div class="notice-strip"><span>ⓘ</span><p>아래 카드는 <strong>교과 평균을 이용한 데모용 참고 매칭</strong>이에요. 대학별 실제 모집요강·입결 자료를 반영하지 않으며, 합격 가능성이나 확률을 뜻하지 않습니다.</p></div>
+      <div class="university-grid" id="university-grid"></div>
+    </section>
+
+    <section class="section section-dark" id="inquiry">
+      <div class="page-width">
+        <div class="section-heading section-heading-light"><div><span class="section-kicker">04 / ASK A BETTER QUESTION</span><h2>수업에서 시작하는 탐구<span class="heading-period">.</span></h2><p>관심 키워드와 교과를 연결해 작은 질문을 만들어 봐요.</p></div><span class="step-chip step-chip-light"><i>04</i> 탐구 주제</span></div>
+        <div class="inquiry-intro"><span>YOUR CURIOSITY, ONE STEP FURTHER</span><p id="inquiry-focus">관심 분야를 바탕으로 탐구의 출발점을 골랐어요.</p></div>
+        <div class="inquiry-grid" id="inquiry-grid"></div>
+        <p class="dark-footnote">주제는 탐구의 시작을 돕는 아이디어예요. 수업 내용과 학교의 연구 윤리 지침에 맞춰 범위와 방법을 조정해 주세요.</p>
+      </div>
+    </section>
+
+    <section class="section page-width" id="resources">
+      <div class="section-heading"><div><span class="section-kicker">05 / KEEP LEARNING</span><h2>배움을 이어줄 자료<span class="heading-period">.</span></h2><p>주제를 더 깊이 알아볼 때 활용할 수 있는 출발점이에요.</p></div><span class="step-chip"><i>05</i> 추천 자료</span></div>
+      <div class="resource-grid" id="resource-grid"></div>
+    </section>
+
+    <section class="section section-map" id="roadmap">
+      <div class="page-width">
+        <div class="section-heading"><div><span class="section-kicker">06 / YOUR NEXT CHAPTER</span><h2>나만의 진로 성장 지도<span class="heading-period">.</span></h2><p>노드를 눌러 각 단계에서 할 수 있는 일을 살펴보세요.</p></div><span class="step-chip"><i>06</i> 진로 로드맵</span></div>
+        <div class="map-shell"><div class="map-side"><span class="map-kicker">A PATH THAT GROWS WITH YOU</span><h3 id="map-major">컴퓨터·AI<br>진로 로드맵</h3><p>하나의 관심이 질문이 되고, 질문이 다음 기회로 이어져요.</p><div class="map-legend"><span><i class="legend-dot legend-now"></i> 지금</span><span><i class="legend-dot legend-next"></i> 다음</span><span><i class="legend-dot legend-later"></i> 앞으로</span></div><div class="map-selected" id="map-selected"><span>선택한 단계</span><strong id="map-selected-title">관심 발견</strong><p id="map-selected-desc">나를 움직이는 질문을 찾아보세요.</p></div></div><div class="map-canvas"><svg class="map-lines" viewBox="0 0 800 390" preserveAspectRatio="none" aria-hidden="true"><path d="M105 198 C185 198 190 82 282 82 S380 198 454 198 S544 82 633 82 S700 198 755 198"/><path d="M105 198 C190 198 195 310 282 310 S365 198 454 198 S548 310 633 310 S705 198 755 198"/></svg><div class="map-nodes" id="map-nodes"></div></div></div>
+      </div>
+    </section>
+
+    <section class="section page-width report-section" id="report">
+      <div class="section-heading"><div><span class="section-kicker">YOUR COMPASS REPORT</span><h2>오늘의 진단 요약<span class="heading-period">.</span></h2><p>현재 입력한 정보로 만든 학습 계획을 보관하거나 인쇄할 수 있어요.</p></div><button class="button button-dark" type="button" data-print>리포트 인쇄 / PDF 저장 <span aria-hidden="true">↗</span></button></div>
+      <div class="report-paper" id="report-paper"><div class="report-header"><div class="brand brand-report"><span class="brand-mark"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><path d="m22.8 12.7-3.4 8.2-6.2 2.4 3.4-8.2 6.2-2.4Z"/><circle cx="18" cy="18" r="1.2"/></svg></span><span><strong>나침반</strong><small>진로 성장 리포트</small></span></div><span class="report-date" id="report-date"></span></div><div class="report-profile"><span>학생 프로필</span><strong id="report-name">장동우</strong><span id="report-profile-meta">2학년 · 컴퓨터·AI</span><b>종합 진단 <i id="report-score">78</i>점</b></div><div class="report-columns"><div><h3>성장 강점</h3><ul id="report-strengths"></ul></div><div><h3>다음 실천</h3><ul id="report-growth"></ul></div></div><div class="report-footer"><span>본 리포트는 사용자가 입력한 자료의 탐색용 요약입니다.</span><span>NA-CHIM-BAN · LEARNING COMPASS</span></div></div>
+    </section>
+  </main>
+  <footer class="footer"><div class="page-width"><a class="brand" href="#home"><span class="brand-mark"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><path d="m22.8 12.7-3.4 8.2-6.2 2.4 3.4-8.2 6.2-2.4Z"/></svg></span><span><strong>나침반</strong><small>진로와 세특을 잇다</small></span></a><p>작은 호기심이 나만의 방향이 되는 곳.</p><span>© 2026 NACHIMBAN · LEARNING COMPASS</span></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
