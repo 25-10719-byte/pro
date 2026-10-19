@@ -8,3 +8,126 @@
 @media print{@page{size:A4;margin:14mm}body{background:#fff;color:#16231c;font-size:10pt}.topbar,.hero,.summary-band,.section:not(.report-section),.footer,.toast,.report-section>.section-heading{display:none!important}.report-section{display:block!important;padding:0!important;width:100%!important}.report-section>.page-width{width:100%!important;margin:0!important}.report-paper{border:0;padding:0;border-radius:0;box-shadow:none}.report-header{padding-bottom:12mm}.report-profile{padding:9mm 0}.report-columns{padding:9mm 0;min-height:75mm}.report-footer{position:fixed;bottom:0;left:0;right:0}.brand-report .brand-mark{print-color-adjust:exact;-webkit-print-color-adjust:exact}.report-profile>b i{print-color-adjust:exact;-webkit-print-color-adjust:exact}.report-paper *{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
 #map-major{white-space:pre-line}
+
+/* Dark visual theme */
+:root{--ink:#e6eee8;--muted:#a3b0a7;--green:#2c5942;--green-2:#6f9b72;--mint:#1d2a21;--lime:#c6df82;--paper:#0b1210;--white:#131c18;--line:#293730;--sand:#1c2520;--shadow:0 18px 48px rgba(0,0,0,.24)}
+html,body{background:var(--paper);color:var(--ink)}
+::selection{background:#456943;color:#f4f7ef}
+.topbar{background:rgba(12,19,16,.94);border-bottom-color:#27342d}
+.brand small,.nav-link,.hero-copy>p,.hero-bottom,.section-heading p,.summary-intro>span:last-child,.summary-stat>span:first-child,.stat-caption,.summary-note,.required-note,.field-hint,.privacy-note,.muted-label,.score-foot,.university-meta,.resource-content p,.map-side>p,.map-legend span,.map-selected>span,.map-selected p,.report-date,.report-footer{color:#a0aea4}
+.nav-link:hover,.nav-link.active,.button-quiet,.text-button,.resource-link{color:#a7ce89}
+.nav-link.active:after,.hero-line{background:#759b68}
+.button-dark{background:#2e6548;color:#f4f8f1}.button-dark:hover,.button-green:hover{background:#397653}
+.button-outline{border-color:#3a4940;color:#d1dfd3}.button-outline:hover{background:#1d2a22}
+.button-quiet{color:#b3c1b7}
+.button-green{background:#bad77a;color:#18251a}
+.hero{border-bottom-color:#26332d}
+.hero h1 em,.section-kicker,.eyebrow,.panel-icon{color:#9dbb83}
+.eyebrow-dot{box-shadow:0 0 0 4px #263324}
+.demo-pill{background:#263126;color:#c0cead}
+.orbit{border-color:#2b3b30}
+.compass{border-color:#425b47;background:radial-gradient(circle,#17221b 45%,#202c21 46%,#202c21 48%,#17221b 49%);color:#a7c690;box-shadow:0 14px 45px #0006}
+.compass:before,.compass:after{background:#364638}
+.compass-east{background:#17221b}
+.art-note{background:#19221d;border-color:#34433a;color:#c0cec2;box-shadow:0 8px 25px #0004}
+.orbit-dot{border-color:#101714}
+.hero-line{opacity:.65}
+.summary-band,.panel,.university-card,.resource-card,.map-shell,.report-paper{background:#131c18;border-color:#293730;color:#e5ece7}
+.summary-band{box-shadow:var(--shadow)}
+.summary-intro,.summary-stat{border-right-color:#2a3730}
+.summary-stat strong,.summary-intro strong,.section-heading h2,.panel-heading h3,.score-top h3,.map-side h3,.report-profile>strong,.university-card h3,.resource-content h3{color:#e7eee8}
+.summary-stat strong small{color:#a1afa5}
+.mini-track,.competency-track,.university-track{background:#29352e}
+.mini-track i,.university-track i{background:#8fad70}
+.summary-note strong,.score-copy>strong,.competency-row b{color:#c4d7be}
+.section{color:#e2e9e3}
+.section-tinted,.section-map{background:#101815}
+.section-kicker,.step-chip{color:#a3b3a7}
+.step-chip{border-color:#334139}
+.step-chip i{color:#a7cb89}
+.field>span:first-child{color:#d1ddd4}
+.field>span:first-child small,.grade-table th{color:#9baa9f}
+.field input,.field select,.field textarea,.grade-table td input,.grade-table td select{background:#0d1511;color:#e0e9e2;border-color:#2d3a33}
+.field input::placeholder,.field textarea::placeholder{color:#75847a}
+.field input:focus,.field select:focus,.field textarea:focus,.grade-table td input:focus,.grade-table td select:focus{border-color:#78966d;box-shadow:0 0 0 3px #78966d2b}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aab9ad' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
+.divider,.map-selected{background-color:#293730;border-color:#293730}
+.grade-remove{color:#9aa99e}
+.grade-remove:hover{color:#e09077}
+.form-message{color:#a9cf8c}
+.form-message.error{color:#f09680}
+.side-guide{background:#1c3d2c}
+.section-heading h2{color:#e5ece6}
+.section-tinted .panel{background:#141d19}
+.score-ring{box-shadow:0 0 0 7px #202b24}
+.score-ring:before{background:#141d19}
+.score-ring>div span{color:#a9b8ad}
+.score-meta{color:#a5b3a8}
+.score-meta b{color:#c4d7be}
+.competency-row>span:first-child{color:#c2cec5}
+.sample-tag{border-color:#354139;color:#aab8ad}
+.score-foot{border-color:#2b3831}
+.competency-track{background:#28352e}
+.feedback-card{background:#141d19;border-color:#2a3830;color:#e3ebe4}
+.feedback-card li{color:#bac7bd}
+.feedback-strength .feedback-symbol{background:#233528;color:#b0d186}
+.feedback-next .feedback-symbol{background:#322b20;color:#dabb7a}
+.insight-banner{background:#1a261e;border-color:#344335;color:#dce8d7}
+.insight-banner p{color:#d1dfd2}
+.notice-strip{background:#18221c;border-color:#344237;color:#bdc9bf}
+.notice-strip strong{color:#e0ebdd}
+.university-card{box-shadow:0 8px 24px #0002}
+.university-card:after{background:#263427}
+.tier-pill{background:#202b23;color:#c4d7bc;border-color:#354638}
+.tier-stretch{background:#2b2521;color:#e2b091}
+.tier-fit{background:#1e2c22;color:#b8d18d}
+.tier-safe{background:#1e2930;color:#a9c1d2}
+.university-source{color:#a4b4a8;font-size:8px;position:relative;z-index:1}
+.university-card>p,.university-major{color:#b3c1b6}
+.university-reason{border-top:1px solid #2c3932;padding-top:11px;margin-top:11px;color:#bdc9c0;font-size:9px;line-height:1.8;position:relative;z-index:1}
+.university-empty{grid-column:1/-1;background:#131c18;border:1px solid #293730;border-radius:6px;padding:22px;color:#d8e2da}
+.university-empty p{color:#aab8ae}
+.section-dark{background:#0e1913;color:#edf3ed}
+.inquiry-card{background:#17271d;border-color:#354b39}
+.inquiry-card:hover{background:#1d3023}
+.resource-cover{background:#202d22}
+.resource-cover:before,.resource-cover:after{border-color:#465744}
+.resource-card:nth-child(2) .resource-cover{background:#302920}
+.resource-card:nth-child(2) .resource-cover:before,.resource-card:nth-child(2) .resource-cover:after{border-color:#62523d}
+.resource-card:nth-child(2) .cover-letter{color:#d3ad76}
+.resource-card:nth-child(3) .resource-cover{background:#202c30}
+.resource-card:nth-child(3) .resource-cover:before,.resource-card:nth-child(3) .resource-cover:after{border-color:#40565c}
+.resource-card:nth-child(3) .cover-letter{color:#9dc3ca}
+.map-side{background:#111a16;border-right-color:#293730}
+.map-canvas{background-image:radial-gradient(#2c3b32 1px,transparent 1px)}
+.map-lines path{stroke:#435840}
+.map-node{background:#17211b;border-color:#334238;color:#d9e4dc;box-shadow:0 5px 18px #0004}
+.map-node:hover,.map-node.selected{border-color:#829c70;box-shadow:0 8px 20px #0007}
+.map-node i{border-color:#17211b}
+.map-selected{border-top-color:#2b3931}
+.report-paper{box-shadow:0 12px 36px #0003}
+.report-header,.report-profile,.report-footer{border-color:#2b3831}
+.report-profile>span:first-child,.report-profile>span:nth-of-type(2){color:#a0aea5}
+.report-profile>b{color:#b6c7b8}
+.report-profile>b i{color:#b8d58d}
+.report-columns h3{color:#bbd0b7}
+.report-columns ul{color:#b8c5bb}
+.report-footer{color:#a1afa5}
+.footer{background:#080e0b}
+.footer p,.footer>.page-width>span{color:#a8b8ab}
+.toast{background:#253d2d;color:#eff6e8}
+.grade-insight{color:#b5c5b8}
+.grade-heading h3 small{font-size:9px;color:#9eafa2;font-weight:400;letter-spacing:0}
+.feedback-heading>div>span{color:#a7b99e}
+
+@media print{
+  html,body{background:#fff;color:#16231c}
+  .report-paper{background:#fff;color:#16231c;border-color:#e3e8e1;box-shadow:none}
+  .report-header,.report-profile,.report-footer{border-color:#edf0ea}
+  .report-date,.brand-report small{color:#879187}
+  .report-profile>strong{color:#16231c}
+  .report-profile>span:first-child,.report-profile>span:nth-of-type(2),.report-columns ul,.report-footer{color:#7d887e}
+  .report-profile>b{color:#627761}
+  .report-profile>b i{color:#365b3e}
+  .report-columns h3{color:#536854}
+}

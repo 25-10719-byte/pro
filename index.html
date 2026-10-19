@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f7f3">
+  <meta name="theme-color" content="#0b1210">
   <meta name="description" content="학생의 관심과 학교생활을 바탕으로 다음 학습 단계를 설계하는 진로·세특 코칭 도구">
   <title>나침반 — 진로와 세특을 잇다</title>
   <link rel="stylesheet" href="styles.css">
@@ -50,7 +50,7 @@
     <section class="summary-band page-width" aria-label="진단 요약">
       <div class="summary-intro"><span class="section-kicker">YOUR SNAPSHOT</span><strong id="snapshot-name">장동우 학생</strong><span id="snapshot-major">인공지능 · 컴퓨터공학 계열 희망</span></div>
       <div class="summary-stat"><span>종합 진단</span><strong><b id="stat-score">78</b><small> / 100</small></strong><div class="mini-track"><i id="stat-score-bar"></i></div></div>
-      <div class="summary-stat"><span>교과 평균 등급</span><strong><b id="stat-grade">2.3</b><small> 등급</small></strong><span class="stat-caption">입력 과목 기준</span></div>
+      <div class="summary-stat"><span>교과 평균 등급</span><strong><b id="stat-grade">2.3</b><small> 등급</small></strong><span class="stat-caption">5등급제 · 입력 과목 기준</span></div>
       <div class="summary-stat"><span>발견한 강점</span><strong><b id="stat-strengths">03</b><small> 가지</small></strong><span class="stat-caption">기록에서 찾아봤어요</span></div>
       <div class="summary-note"><span class="note-spark">✳</span><span>오늘의 기록은<br><strong>내일의 가능성</strong>이 돼요.</span></div>
     </section>
@@ -71,10 +71,10 @@
             <label class="field field-wide"><span>요즘 관심 있는 것 <small>(키워드로 적어도 좋아요)</small></span><input id="student-interest" name="interest" maxlength="140" placeholder="예: 생성형 AI, 기후 변화, 데이터 시각화"></label>
           </div>
           <div class="divider"></div>
-          <div class="panel-heading grade-heading"><div><span class="panel-icon">02</span><h3>과목별 성적</h3></div><button type="button" class="text-button" id="add-grade">＋ 과목 추가</button></div>
-          <div class="grade-table-wrap"><table class="grade-table"><thead><tr><th>과목명</th><th>학기</th><th>등급</th><th><span class="sr-only">삭제</span></th></tr></thead><tbody id="grade-rows"></tbody></table></div>
+          <div class="panel-heading grade-heading"><div><span class="panel-icon">02</span><h3>과목별 성적 <small>5등급제 · 1등급이 가장 높아요</small></h3></div><button type="button" class="text-button" id="add-grade">＋ 과목 추가</button></div>
+          <div class="grade-table-wrap"><table class="grade-table"><thead><tr><th>과목명</th><th>학기</th><th>등급 (1~5)</th><th><span class="sr-only">삭제</span></th></tr></thead><tbody id="grade-rows"></tbody></table></div>
           <div class="divider"></div>
-          <label class="field field-block"><span>세부능력 및 특기사항 <small>(세특)</small></span><textarea id="student-record" name="record" rows="6" maxlength="4000" placeholder="수업에서 탐구한 주제, 내가 한 활동, 알게 된 점을 적어주세요."></textarea><span class="field-hint"><span id="record-count">0</span> / 4,000자 <span>구체적인 과정과 배운 점을 적으면 더 알찬 피드백을 받을 수 있어요.</span></span></label>
+          <label class="field field-block"><span>세부능력 및 특기사항 <small>(세특)</small></span><textarea id="student-record" name="record" rows="8" maxlength="13000" placeholder="수업에서 탐구한 주제, 내가 한 활동, 알게 된 점을 적어주세요."></textarea><span class="field-hint"><span id="record-count">0</span> / 13,000자 <span>성적과 함께 분석하므로 과목별 활동과 배운 점을 구체적으로 적어주세요.</span></span></label>
           <div class="form-footer"><span class="privacy-note"><span aria-hidden="true">◉</span> <span id="privacy-message">입력 내용은 이 브라우저에서만 처리돼요.</span></span><div class="form-actions"><button class="button button-outline" type="button" data-sample>샘플 불러오기</button><button class="button button-green" type="submit" id="analyze-button"><span>✳</span> 내 기록 분석하기</button></div></div>
           <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
         </form>
@@ -93,7 +93,7 @@
       <div class="page-width">
         <div class="section-heading"><div><span class="section-kicker">02 / RECORD REVIEW</span><h2>기록 속 가능성 읽기<span class="heading-period">.</span></h2><p>입력한 내용을 바탕으로 학습 방향을 정리했어요.</p></div><span class="step-chip"><i>02</i> 생기부 진단</span></div>
         <div class="audit-layout">
-          <article class="panel score-panel"><div class="score-top"><div><span class="panel-eyebrow">MY GROWTH SCORE</span><h3>종합 진단</h3></div><span class="sample-tag">참고용 진단</span></div><div class="score-body"><div class="score-ring" id="score-ring"><div><strong id="audit-score">78</strong><span>점</span></div></div><div class="score-copy"><strong id="score-title">탐구를 확장하는 학생</strong><p id="score-summary">현재 입력된 성적과 기록을 기준으로 살펴봤어요.</p><div class="score-meta"><span>학년 <b id="audit-grade">2학년</b></span><span>기록 <b id="audit-record-length">0자</b></span></div></div></div><div class="score-foot"><span id="analysis-note">키워드 기반 기본 분석입니다. 외부 AI·입시 데이터는 연결되지 않았으며, 점수는 참고용 지표예요.</span><span>ⓘ</span></div></article>
+          <article class="panel score-panel"><div class="score-top"><div><span class="panel-eyebrow">MY GROWTH SCORE</span><h3>종합 진단</h3></div><span class="sample-tag">참고용 진단</span></div><div class="score-body"><div class="score-ring" id="score-ring"><div><strong id="audit-score">78</strong><span>점</span></div></div><div class="score-copy"><strong id="score-title">탐구를 확장하는 학생</strong><p id="score-summary">현재 입력된 성적과 기록을 기준으로 살펴봤어요.</p><p class="grade-insight" id="grade-insight"></p><div class="score-meta"><span>학년 <b id="audit-grade">2학년</b></span><span>기록 <b id="audit-record-length">0자</b></span></div></div></div><div class="score-foot"><span id="analysis-note">세특과 5등급제 성적을 함께 보는 참고용 진단입니다.</span><span>ⓘ</span></div></article>
           <article class="panel competency-panel"><div class="panel-heading"><div><span class="panel-icon">03</span><h3>역량별 성장 단서</h3></div><span class="muted-label">기록에서 읽은 키워드</span></div><div class="competency-list" id="competency-list"></div></article>
         </div>
         <div class="feedback-grid"><article class="feedback-card feedback-strength"><div class="feedback-heading"><span class="feedback-symbol">↗</span><div><span>KEEP GROWING</span><h3>이미 잘하고 있는 점</h3></div></div><ul id="strength-list"></ul></article><article class="feedback-card feedback-next"><div class="feedback-heading"><span class="feedback-symbol">＋</span><div><span>NEXT STEP</span><h3>다음에 채워볼 점</h3></div></div><ul id="growth-list"></ul></article></div>
@@ -102,8 +102,8 @@
     </section>
 
     <section class="section page-width" id="universities">
-      <div class="section-heading"><div><span class="section-kicker">03 / EXPLORE YOUR OPTIONS</span><h2>가능성을 넓혀보는 지원 탐색<span class="heading-period">.</span></h2><p>목표 학과를 중심으로 지원 전략을 살펴보세요.</p></div><span class="step-chip"><i>03</i> 대학 탐색</span></div>
-      <div class="notice-strip"><span>ⓘ</span><p>아래 카드는 <strong>교과 평균을 이용한 데모용 참고 매칭</strong>이에요. 대학별 실제 모집요강·입결 자료를 반영하지 않으며, 합격 가능성이나 확률을 뜻하지 않습니다.</p></div>
+      <div class="section-heading"><div><span class="section-kicker">03 / EXPLORE YOUR OPTIONS</span><h2>생기부 분석 후 대학 탐색<span class="heading-period">.</span></h2><p>세특과 5등급제 성적을 먼저 분석한 다음 추천 선택지를 살펴봅니다.</p></div><span class="step-chip"><i>03</i> 대학 탐색</span></div>
+      <div class="notice-strip"><span>ⓘ</span><p id="university-note">세특과 5등급제 성적 분석을 실행하면 그 결과를 바탕으로 대학 선택지를 이어서 살펴봅니다.</p></div>
       <div class="university-grid" id="university-grid"></div>
     </section>
 

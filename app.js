@@ -33,7 +33,7 @@
     });
   }
   function getAverage(grades) {
-    var numbers = (grades || []).map(function (item) { return Number(item.grade); }).filter(function (n) { return Number.isFinite(n) && n >= 1 && n <= 9; });
+    var numbers = (grades || []).map(function (item) { return Number(item.grade); }).filter(function (n) { return Number.isInteger(n) && n >= 1 && n <= 5; });
     if (!numbers.length) return 0;
     return numbers.reduce(function (sum, n) { return sum + n; }, 0) / numbers.length;
   }
@@ -71,6 +71,7 @@
         state.profile = Object.assign(clone(demoProfile), saved.profile);
         state.analysis = saved.analysis || null;
         state.hasRun = Boolean(saved.analysis);
+        if (!state.analysis || !state.analysis.gradeInsight) state.analysis = analyze(state.profile);
         return true;
       }
     } catch (error) { /* damaged local data is ignored */ }
@@ -97,12 +98,14 @@
     privacy.textContent = state.apiConfigured
       ? 'Gemini 분석 시 이름을 제외한 입력 내용이 Google로 전송돼요.'
       : '입력 내용은 이 브라우저에서만 처리돼요.';
-    if (state.analysis && state.analysis.aiPowered) {
-      note.textContent = 'Gemini가 피드백을 생성했어요. 점수는 로컬 참고 지표이며, 대학별 입시 데이터는 연결되지 않았습니다.';
+    if (state.analysis && state.analysis.universityAiPowered) {
+      note.textContent = 'Gemini가 세특과 5등급제 성적을 바탕으로 대학 탐색 예시를 제안했어요. 최신 모집요강·입결과 합격 가능성을 뜻하지 않습니다.';
+    } else if (state.analysis && state.analysis.aiPowered) {
+      note.textContent = 'Gemini가 세특과 성적 피드백을 생성했어요. 대학 탐색 예시는 실제 입시 자료와 연결되지 않은 참고용 제안입니다.';
     } else if (state.apiConfigured) {
-      note.textContent = 'AI 분석을 실행하면 이름을 제외한 입력 내용이 Google Gemini API로 전송됩니다.';
+      note.textContent = '분석을 실행하면 이름을 제외한 세특과 5등급제 성적이 Google Gemini API로 전송됩니다.';
     } else {
-      note.textContent = '키워드 기반 기본 분석입니다. 외부 AI·입시 데이터는 연결되지 않았으며, 점수는 참고용 지표예요.';
+      note.textContent = '세특과 5등급제 성적을 브라우저에서 함께 살펴봅니다. AI와 대학별 입시 데이터는 연결되지 않아 대학 카드는 계열 탐색용 참고 범위예요.';
     }
   }
   function updateApiStatus() {
@@ -128,16 +131,40 @@
     });
     var payload = await response.json();
     if (!response.ok) throw new Error(payload.error || 'Gemini 분석에 실패했습니다.');
-    if (!payload.feedback || !Array.isArray(payload.feedback.strengths) || !Array.isArray(payload.feedback.growth) || !Array.isArray(payload.feedback.topics)) {
+    if (!payload.feedback || !payload.feedback.gradeInsight || !Array.isArray(payload.feedback.strengths) || !Array.isArray(payload.feedback.growth) || !Array.isArray(payload.feedback.topics)) {
       throw new Error('Gemini 응답 형식이 올바르지 않습니다.');
     }
     return payload.feedback;
+  }
+  async function requestAiUniversityRecommendations(profile, analysis) {
+    var response = await fetch('/api/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profile: {
+          grade: profile.grade, track: profile.track, major: profile.major,
+          interest: profile.interest, grades: profile.grades
+        },
+        analysis: {
+          summary: analysis.summary,
+          gradeInsight: analysis.gradeInsight,
+          strengths: analysis.strengths,
+          growth: analysis.growth
+        }
+      })
+    });
+    var payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || '대학 추천 분석에 실패했습니다.');
+    if (!Array.isArray(payload.recommendations) || payload.recommendations.length !== 3) {
+      throw new Error('Gemini 대학 추천 응답 형식이 올바르지 않습니다.');
+    }
+    return payload;
   }
   function makeGradeRow(grade) {
     var row = document.createElement('tr');
     row.innerHTML = '<td><input class="grade-subject" maxlength="24" aria-label="과목명" placeholder="예: 수학" value="' + escapeHtml(grade.subject || '') + '"></td>' +
       '<td><select class="grade-term" aria-label="학기">' + ['1학년 1학기','1학년 2학기','2학년 1학기','2학년 2학기','3학년 1학기','3학년 2학기'].map(function (term) { return '<option' + (grade.term === term ? ' selected' : '') + '>' + term + '</option>'; }).join('') + '</select></td>' +
-      '<td><input class="grade-value" type="number" min="1" max="9" step="0.1" inputmode="decimal" aria-label="등급 1에서 9" placeholder="1~9" value="' + escapeHtml(grade.grade || '') + '"></td>' +
+      '<td><input class="grade-value" type="number" min="1" max="5" step="1" inputmode="numeric" aria-label="5등급제 등급 1에서 5" placeholder="1~5" value="' + escapeHtml(grade.grade || '') + '"></td>' +
       '<td><button class="grade-remove" type="button" aria-label="과목 삭제">×</button></td>';
     return row;
   }
@@ -161,6 +188,7 @@
   function analyze(profile) {
     var record = (profile.record || '').trim();
     var average = getAverage(profile.grades);
+    var gradeFactor = average ? (5 - average) * 3 : 0;
     var text = record.toLowerCase();
     var inquiryWords = ['탐구','조사','실험','분석','비교','자료','데이터','보고서','시각화','제작','구현','설계','측정','모델','질문','발표','토론','프로젝트','해결','관찰','검증'];
     var evidenceWords = ['결과','근거','수치','그래프','표본','오차','한계','개선','비교','과정','검토','성찰','피드백','원인'];
@@ -186,7 +214,7 @@
     var keywordList = (profile.interest || '').split(/[,，/·\s]+/).filter(function (part) { return part.length > 1; }).slice(0, 6);
     relatedCount += keywordList.filter(function (word) { return text.indexOf(word.toLowerCase()) >= 0; }).length;
     var recordScore = clamp(Math.round(45 + Math.min(record.length, 400) * 0.07 + inquiryCount * 2 + evidenceCount * 2 + depthCount * 2), 28, 96);
-    var academic = clamp(Math.round(42 + inquiryCount * 5 + evidenceCount * 4 + Math.min(record.length, 300) * 0.06), 30, 96);
+    var academic = clamp(Math.round(42 + inquiryCount * 5 + evidenceCount * 4 + Math.min(record.length, 300) * 0.06 + gradeFactor), 30, 96);
     var career = clamp(Math.round(48 + relatedCount * 8 + (profile.major ? 8 : 0)), 32, 96);
     var persistence = clamp(Math.round(45 + inquiryCount * 4 + depthCount * 7 + evidenceCount * 2), 30, 96);
     var collaboration = clamp(Math.round(48 + teamCount * 9 + (record.length > 160 ? 5 : 0)), 32, 95);
@@ -206,17 +234,45 @@
     if (depthCount < 1) growth.push('탐구의 한계나 새롭게 남은 질문을 적어 다음 탐구로 연결해 보세요.');
     if (teamCount < 1) growth.push('질문을 나눈 과정이나 피드백을 반영한 경험도 기록해 보세요.');
     if (!growth.length) growth.push('이번 탐구에서 남은 질문을 다른 교과의 개념과 연결해 확장해 보세요.');
-    var weakSubjects = (profile.grades || []).filter(function (item) { return Number(item.grade) >= average + 0.6; }).sort(function (a,b) { return Number(b.grade) - Number(a.grade); }).slice(0, 2);
+    var weakSubjects = (profile.grades || []).filter(function (item) {
+      var grade = Number(item.grade);
+      return average && Number.isInteger(grade) && grade >= 1 && grade <= 5 && grade >= average + 0.6;
+    }).sort(function (a,b) { return Number(b.grade) - Number(a.grade); }).slice(0, 2);
+    var gradeInsight = makeGradeInsight(profile, average, weakSubjects);
     var summary = record.length < 100 ? '기록이 짧아 기본적인 성장 단서 위주로 정리했어요.' : '입력된 기록에서 관심 분야와 탐구 과정의 연결점을 살펴봤어요.';
     var tip = growth[0] || '작은 질문 하나를 직접 확인해 보는 경험이 기록을 더 깊게 만들어요.';
     var major = profile.major || profile.track || '희망 진로';
     var topics = makeTopics(profile, keywordList, weakSubjects);
     return {
       overall: overall, average: average, strengths: strengths, growth: growth, areas: areas,
-      recordScore: recordScore, summary: summary, tip: tip, weakSubjects: weakSubjects,
+      recordScore: recordScore, summary: summary, gradeInsight: gradeInsight, tip: tip, weakSubjects: weakSubjects,
       topics: topics, major: major, keywordList: keywordList,
-      fitScore: clamp(Math.round(92 - Math.max(0, average - 1) * 10 + (relatedCount > 1 ? 3 : 0)), 35, 96)
+      fitScore: clamp(Math.round(92 - Math.max(0, average - 1) * 9 + (relatedCount > 1 ? 3 : 0)), 35, 96),
+      universityRecommendations: makeLocalUniversityRecommendations(profile, average, weakSubjects)
     };
+  }
+  function makeGradeInsight(profile, average, weakSubjects) {
+    var grades = profile.grades || [];
+    if (!grades.length || !average) return '과목 등급을 입력하면 생기부 활동과 5등급제 성적을 함께 살펴볼 수 있어요.';
+    var bestSubjects = grades.slice().sort(function (a, b) { return Number(a.grade) - Number(b.grade); }).slice(0, 2);
+    var bestText = bestSubjects.map(function (item) { return item.subject + ' ' + item.grade + '등급'; }).join(', ');
+    var record = (profile.record || '').toLowerCase();
+    var linkedSubjects = grades.filter(function (item) { return item.subject && record.indexOf(item.subject.toLowerCase()) >= 0; }).map(function (item) { return item.subject; });
+    var insight = '5등급제 과목 평균은 ' + average.toFixed(1) + '등급이며, 상대적으로 높은 과목은 ' + bestText + '입니다.';
+    if (linkedSubjects.length) insight += ' 생기부에 ' + Array.from(new Set(linkedSubjects)).slice(0, 3).join(', ') + ' 과목 활동이 언급되어 성적과 탐구 기록을 함께 확인했어요.';
+    else insight += ' 생기부에 과목명이 직접 드러나지 않아 성적과 활동의 연결은 과목별 활동을 구체적으로 적으면 더 정확히 살펴볼 수 있어요.';
+    if (weakSubjects.length) insight += ' 보완 과목은 ' + weakSubjects.map(function (item) { return item.subject; }).join(', ') + '이며, 기록에 나온 활동과 함께 개선할 학습 단서를 찾아보세요.';
+    return insight;
+  }
+  function makeLocalUniversityRecommendations(profile, average, weakSubjects) {
+    var major = profile.major || profile.track || '희망 계열';
+    var gradeText = average ? '5등급제 평균 ' + average.toFixed(1) + '등급' : '과목 등급 미입력';
+    var growthText = weakSubjects.length ? weakSubjects.map(function (item) { return item.subject; }).join(', ') + ' 과목의 보완 계획' : '입력된 교과 성적';
+    return [
+      { university: '서울·수도권 대학', major: major + ' 계열', category: '도전 검토', reason: gradeText + '과 세특에서 확인된 진로 관심을 기준으로 살펴볼 도전 탐색 범위예요.' },
+      { university: '수도권·지역 거점 대학', major: major + ' 계열', category: '적정 검토', reason: '세특의 탐구 경험과 ' + gradeText + '을 함께 놓고 전형과 학과 선택지를 비교해 보세요.' },
+      { university: '지역 거점 국립대·지역 대학', major: major + ' 계열', category: '지원 폭 탐색', reason: growthText + '을 고려해 지역과 전형을 넓혀 살펴볼 탐색 범위예요.' }
+    ];
   }
   function makeTopics(profile, keywords, weakSubjects) {
     var focus = keywords[0] || profile.track || '관심 분야';
@@ -240,9 +296,10 @@
     document.getElementById('stat-grade').textContent = avgText;
     document.getElementById('stat-strengths').textContent = String(result.strengths.length).padStart(2, '0');
     document.getElementById('audit-score').textContent = String(result.overall);
-    document.getElementById('score-ring').style.background = 'conic-gradient(#77985f 0deg,#a8bc7c ' + Math.round(result.overall * 3.6) + 'deg,#e9eee5 ' + Math.round(result.overall * 3.6) + 'deg 360deg)';
+    document.getElementById('score-ring').style.background = 'conic-gradient(#93b876 0deg,#b7d78d ' + Math.round(result.overall * 3.6) + 'deg,#29352e ' + Math.round(result.overall * 3.6) + 'deg 360deg)';
     document.getElementById('score-title').textContent = result.overall >= 78 ? '탐구를 확장하는 학생' : result.overall >= 58 ? '관심의 방향을 잡아가는 학생' : '성장의 단서를 모아가는 학생';
     document.getElementById('score-summary').textContent = result.summary;
+    document.getElementById('grade-insight').textContent = result.gradeInsight || makeGradeInsight(profile, result.average, result.weakSubjects || []);
     document.getElementById('audit-grade').textContent = profile.grade + '학년';
     document.getElementById('audit-record-length').textContent = profile.record.length + '자';
     var competencies = ['학업 탐구력','진로 연계성','탐구 지속성','소통·협력'];
@@ -252,7 +309,15 @@
     document.getElementById('strength-list').innerHTML = result.strengths.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
     document.getElementById('growth-list').innerHTML = result.growth.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
     document.getElementById('next-step-tip').textContent = result.tip;
-    document.getElementById('university-grid').innerHTML = makeUniversityCards(result, profile);
+    var universityNote = document.getElementById('university-note');
+    if (!state.hasRun) {
+      universityNote.textContent = '세특과 5등급제 성적 분석을 실행하면 그 결과를 바탕으로 대학 선택지를 이어서 살펴봅니다.';
+    } else if (result.universityAiPowered) {
+      universityNote.textContent = (result.universityNote || '생기부와 성적 분석을 마친 뒤 Gemini가 대학 탐색 예시를 제안했어요.') + ' 대학별 최신 모집요강과 입결 자료를 조회하지 않았으며, 합격 가능성을 뜻하지 않습니다.';
+    } else {
+      universityNote.textContent = result.universityStatus || '생기부와 성적 분석 결과를 바탕으로 계열별 탐색 범위를 표시했어요. 대학별 실제 입시자료나 합격 가능성을 뜻하지 않습니다.';
+    }
+    document.getElementById('university-grid').innerHTML = makeUniversityCards(result, profile, state.hasRun);
     document.getElementById('inquiry-focus').textContent = (profile.interest || profile.track || '관심 분야') + '와 교과를 잇는 질문의 출발점이에요.';
     document.getElementById('inquiry-grid').innerHTML = result.topics.map(function (topic, index) {
       return '<article class="inquiry-card"><span class="inquiry-number">QUESTION / 0' + (index + 1) + '</span><h3>' + escapeHtml(topic.title) + '</h3><p>' + escapeHtml(topic.body) + '</p><span class="inquiry-tag">' + escapeHtml(topic.tag) + '</span></article>';
@@ -262,17 +327,19 @@
     renderReport(profile, result);
     updateAnalysisNotice();
   }
-  function makeUniversityCards(result, profile) {
-    var avg = result.average || 4.5;
-    var major = profile.major || profile.track || '관심 전공';
-    var choices = [
-      { name:'서울권 종합대학', note:'도전 검토', baseline:1.8, key:'stretch' },
-      { name:'수도권 종합대학', note:'적정 검토', baseline:2.8, key:'fit' },
-      { name:'지역 거점 국립대', note:'안정 검토', baseline:3.8, key:'safe' }
-    ];
+  function makeUniversityCards(result, profile, hasRun) {
+    if (!hasRun) return '<article class="university-empty"><strong>분석을 기다리고 있어요</strong><p>먼저 세특과 5등급제 성적을 분석하면 추천 대학 탐색을 이어갑니다.</p></article>';
+    if (result.universityStatus && result.universityStatus.indexOf('1단계') === 0) {
+      return '<article class="university-empty"><strong>추천 대학 분석 중</strong><p>1단계 생기부·성적 분석을 바탕으로 2단계 대학 선택지를 정리하고 있어요.</p></article>';
+    }
+    var choices = Array.isArray(result.universityRecommendations) && result.universityRecommendations.length
+      ? result.universityRecommendations
+      : makeLocalUniversityRecommendations(profile, result.average, result.weakSubjects || []);
     return choices.map(function (choice) {
-      var match = clamp(Math.round(88 - Math.abs(avg - choice.baseline) * 12 + (choice.key === 'stretch' && avg > 2.8 ? -5 : 0) + (choice.key === 'safe' && avg < 2 ? -5 : 0)), 38, 94);
-      return '<article class="university-card"><div class="university-top"><span class="tier-pill tier-' + choice.key + '">' + choice.note + '</span><span class="university-match"><b>' + match + '</b> 참고 점수</span></div><h3>' + choice.name + '</h3><p>' + escapeHtml(major) + ' 계열 · 교과 탐색</p><div class="university-meta"><span>교과 평균 <strong>' + (result.average ? result.average.toFixed(1) : '입력 필요') + '</strong></span><span>시뮬레이션</span></div><div class="university-track"><i style="width:' + match + '%"></i></div></article>';
+      var category = choice.category || '지원 폭 탐색';
+      var tier = category.indexOf('도전') >= 0 ? 'stretch' : category.indexOf('적정') >= 0 ? 'fit' : 'safe';
+      var source = result.universityAiPowered ? 'AI 제안' : '계열 범위 탐색';
+      return '<article class="university-card"><div class="university-top"><span class="tier-pill tier-' + tier + '">' + escapeHtml(category) + '</span><span class="university-source">' + source + '</span></div><h3>' + escapeHtml(choice.university) + '</h3><p class="university-major">' + escapeHtml(choice.major) + '</p><div class="university-reason">' + escapeHtml(choice.reason) + '</div></article>';
     }).join('');
   }
   function renderResources(profile, result) {
@@ -300,7 +367,7 @@
     var formattedDate = new Intl.DateTimeFormat('ko-KR', { year:'numeric', month:'long', day:'numeric' }).format(date);
     document.getElementById('report-date').textContent = formattedDate;
     document.getElementById('report-name').textContent = profile.name || '학생';
-    document.getElementById('report-profile-meta').textContent = profile.grade + '학년 · ' + (profile.track || '계열 미입력') + ' · 교과 평균 ' + (result.average ? result.average.toFixed(1) : '—');
+    document.getElementById('report-profile-meta').textContent = profile.grade + '학년 · ' + (profile.track || '계열 미입력') + ' · 5등급제 평균 ' + (result.average ? result.average.toFixed(1) : '—');
     document.getElementById('report-score').textContent = String(result.overall);
     document.getElementById('report-strengths').innerHTML = result.strengths.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
     document.getElementById('report-growth').innerHTML = result.growth.map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
@@ -323,8 +390,8 @@
       document.getElementById('student-record').focus();
       return;
     }
-    if (numbers.some(function (n) { return !Number.isFinite(n) || n < 1 || n > 9; })) {
-      showFormMessage('등급은 1~9 사이 숫자로 입력해 주세요.', true);
+    if (numbers.some(function (n) { return !Number.isInteger(n) || n < 1 || n > 5; })) {
+      showFormMessage('등급은 5등급제 기준 1~5 사이 정수로 입력해 주세요.', true);
       return;
     }
     if (profile.grades.some(function (item) { return item.subject && !item.grade; })) {
@@ -334,22 +401,43 @@
     state.profile = profile;
     state.analysis = analyze(profile);
     state.hasRun = true;
+    state.analysis.universityStatus = state.apiConfigured
+      ? '1단계: 생기부와 5등급제 성적을 분석하고 있어요. 완료 후 대학 탐색을 이어갑니다.'
+      : '생기부와 5등급제 성적을 함께 분석했어요. AI 연결이 없어 계열별 대학 탐색 범위를 참고용으로 보여줍니다.';
     var button = document.getElementById('analyze-button');
     var previousButtonContent = button.innerHTML;
-    var analysisMessage = '분석이 끝났어요. 결과는 이 기기에 저장됩니다.';
+    var analysisMessage = '생기부와 5등급제 성적 분석이 끝났어요. 대학 카드는 계열별 참고 범위예요.';
     button.disabled = true;
-    button.textContent = state.apiConfigured ? 'Gemini 분석 중…' : '로컬 분석 중…';
-    showFormMessage(state.apiConfigured ? '이름을 제외한 입력 내용을 Gemini에 보내고 있어요.' : '브라우저에서 입력 내용을 분석하고 있어요.', false);
+    button.textContent = state.apiConfigured ? '생기부·성적 분석 중…' : '생기부·성적 분석 중…';
+    showFormMessage(state.apiConfigured ? '1단계: 이름을 제외한 세특과 성적을 Gemini에 보내고 있어요.' : '브라우저에서 세특과 성적을 함께 분석하고 있어요.', false);
+    renderAnalysis();
     if (state.apiConfigured) {
       try {
         var feedback = await requestAiFeedback(profile);
         state.analysis.summary = feedback.summary;
+        state.analysis.gradeInsight = feedback.gradeInsight;
         state.analysis.strengths = feedback.strengths.slice(0, 3);
         state.analysis.growth = feedback.growth.slice(0, 3);
         state.analysis.tip = feedback.tip;
         state.analysis.topics = feedback.topics.slice(0, 3);
         state.analysis.aiPowered = true;
+        state.analysis.universityStatus = '1단계 분석 완료. 분석 결과와 성적을 바탕으로 추천 대학을 살펴보고 있어요.';
+        button.textContent = '추천 대학 분석 중…';
+        showFormMessage('1단계 생기부·성적 분석을 마쳤어요. 이어서 2단계 대학 추천을 분석하고 있어요.', false);
+        renderAnalysis();
+        try {
+          var universityResult = await requestAiUniversityRecommendations(profile, state.analysis);
+          state.analysis.universityRecommendations = universityResult.recommendations;
+          state.analysis.universityNote = universityResult.note;
+          state.analysis.universityAiPowered = true;
+          state.analysis.universityStatus = '';
+          analysisMessage = '생기부와 5등급제 성적 분석 후 대학 탐색까지 마쳤어요. 결과는 이 기기에 저장됩니다.';
+        } catch (universityError) {
+          state.analysis.universityStatus = '생기부와 성적 AI 분석은 완료했지만 대학 추천 연결에 실패해 계열별 탐색 범위를 표시합니다.';
+          analysisMessage = '생기부·성적 분석은 완료했지만 대학 추천 분석에 실패해 계열별 탐색 범위를 표시했어요.';
+        }
       } catch (error) {
+        state.analysis.universityStatus = 'AI 연결에 실패해 생기부와 성적의 로컬 분석 및 계열별 대학 탐색 범위를 표시합니다.';
         analysisMessage = 'Gemini 연결에 실패해 기본 분석으로 결과를 만들었어요.';
       }
     }
